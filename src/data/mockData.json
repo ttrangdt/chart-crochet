@@ -1,0 +1,84 @@
+{
+  "charts": [
+    {
+      "id": "c001",
+      "name": "Súp Lơ",
+      "category": "Móc khóa",
+      "difficulty": "Cơ Bản",
+      "difficulty_stars": 2,
+      "image_url": "https://i.pinimg.com/736x/80/9a/9b/809a9bd4563e18ae0be88e6ca165ac5f.jpg",
+      "img": "https://i.pinimg.com/736x/4e/37/c6/4e37c6aecd96ec79c1be335e8c41fe7d.jpg",
+      "description": "Super xanh lá không hề xa lánh nhen",
+      "materials": ["Len Milk Cotton 50g", "Bông gòn bi", "Mắt thú 6mm"],
+      "tools": ["Kim móc 2.5mm", "Kim khâu len", "Kéo"],
+      "content": {
+        "Thân": [
+          "R1: MR 6X (6)",
+          "R2: 6V (12)",
+          "R3: (X, V)*6 (18)",
+          "R4: (2X, V)*6 (24)",
+          "R6-7: 24X (24)",
+          "R8: 7X, BO, 8X, BO, 7X (24)",
+          "R9-11: 24X (24)"
+        ],
+        "Đầu Xù": [
+          "R12: (X, BO)* 12 (24)",
+          "R13: (BO, X)*12 (24)",
+          "R14: (A, BO)*8 (16)",
+          "R15: X, (A, BO)*5 (12)",
+          "R16: A*5, X (6), Sl st, FO"
+        ]
+      },
+      "is_free": true
+    },
+    {
+      "id": "c002",
+      "name": "Mèo đen",
+      "category": "Móc khóa",
+      "difficulty": "Mầm non",
+      "difficulty_stars": 3,
+      "image_url": "https://i.pinimg.com/736x/0a/ac/0e/0aac0e241908e89ddc4e38c9578b643c.jpg",
+      "img": "https://i.pinimg.com/736x/4a/97/94/4a97948a82dd44799efa0166dfb22ea9.jpg",
+      "description": "Chiếc mềo đen, hehe.",
+      "materials": ["Len Milk Cotton màu trắng, đen"],
+      "tools": ["Kim móc 2.0mm", "Kim khâu len", "Kéo"],
+      "content": {
+        "Quả dâu": ["R1: MR 4X (4)", "R2: 4V (8)", "R3: (X, V)*4 (12)"],
+        "Phần Lá": ["Móc 5 chòm lá nhỏ kết lại"]
+      },
+      "is_free": true
+    },
+    {
+      "id": "c003",
+      "name": "Hoa Mặt Trời",
+      "category": "Thú bông",
+      "difficulty": "Cơ bản",
+      "difficulty_stars": 2,
+      "img": "https://i.pinimg.com/736x/3f/f4/d1/3ff4d1a424c5d50fd4dd4d5f71810ad2.jpg",
+      "image_url": "https://i.pinimg.com/736x/8a/36/c9/8a36c968b077942a132ef2166f3249d8.jpg",
+      "description": "Thú bông cỡ vừa ôm ngủ siêu đã.",
+      "materials": ["Len Xù Lông Cừu", "Vải nỉ đen"],
+      "tools": ["Kim 3.5mm", "Keo nến"],
+      "content": {
+        "Phần Thân": ["Làm theo tỉ lệ 1:1, chú ý lực siết dây."]
+      },
+      "is_free": true
+    },
+    {
+      "id": "c004",
+      "name": "Hoa Hướng Dương Chậu Mini",
+      "category": "Đồ gia dụng",
+      "difficulty": "Khéo tay",
+      "difficulty_stars": 3,
+      "image_url": "https://images.unsplash.com/photo-1584839818816-1f6920f666f7?q=80&w=600&auto=format&fit=crop",
+      "description": "Chậu hoa để bàn học không bao giờ tàn.",
+      "materials": ["Len Cotton loang", "Kẽm cành 2mm"],
+      "tools": ["Kim móc 2.5mm", "Keo nến"],
+      "content": {
+        "Cánh hoa": ["Làm 12 cánh hoa lẻ bọc kẽm"],
+        "Lõi hoa": ["Quấn sợi loang màu nâu đậm"]
+      },
+      "is_free": true
+    }
+  ]
+}
