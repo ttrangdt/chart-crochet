@@ -4,34 +4,43 @@
   margin: 0;
 }
 
+:root {
+  --bg-main: #FFF5F7;
+  --bg-card: #ffffff;
+  --text-main: #5D4037;
+  --text-sub: #666666;
+  --pink-light: #F8BBD0;
+  --pink-dark: #E91E63;
+  --border-soft: #f8bbd0;
+  --glass-bg: rgba(248, 187, 208, 0.85);
+  --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #FFF5F7 0%, #FFFFFF 100%);
+  --panel-bg: #FFF5F7;
+}
+
+[data-theme='dark'] {
+  --bg-main: #1c1518; /* Hồng đen nhạt */
+  --bg-card: #2a1f24;
+  --text-main: #fce4ec; /* Tương phản sáng */
+  --text-sub: #ba9fa9;
+  --pink-light: #8e3855;
+  --pink-dark: #ff609a;
+  --border-soft: #5e3745;
+  --glass-bg: rgba(28, 21, 24, 0.85);
+  --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #1c1518 0%, #2a1f24 100%);
+  --panel-bg: #3d2830;
+}
+
 body {
-  background-color: #FFF5F7;
-  color: #5D4037;
+  background: var(--layout-bg);
+  color: var(--text-main);
+  transition: all 0.4s ease;
+  min-height: 100vh;
 }
 
-.info-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.info-table th {
-  background-color: #F8BBD0;
-  color: #5D4037;
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #f8bbd0;
-}
-
-.info-table td {
-  padding: 10px;
-  border: 1px solid #f8bbd0;
-  background-color: #fff;
-}
-
-/* ================================ */
-/* ANIMATIONS                       */
-/* ================================ */
+/* Các tuỳ chỉnh thẻ màu tự động theo biến */
+.info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.info-table th { background-color: var(--panel-bg); color: var(--text-main); padding: 12px; text-align: left; border: 1px solid var(--border-soft); }
+.info-table td { padding: 12px; border: 1px solid var(--border-soft); background-color: var(--bg-card); color: var(--text-main); }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
@@ -45,41 +54,38 @@ body {
 .hover-card {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-soft) !important;
 }
 .hover-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(233, 30, 99, 0.15) !important;
+  box-shadow: 0 15px 35px rgba(233, 30, 99, 0.15) !important;
 }
 
-/* Hình ảnh zoom lên khi hover */
-.card-image {
-  transition: transform 0.8s ease !important;
-}
-.hover-card:hover .card-image {
-  transform: scale(1.1) !important;
-}
+.card-image { transition: transform 0.8s ease !important; }
+.hover-card:hover .card-image { transform: scale(1.1) !important; }
 
-/* Nút xem nhanh bật lên từ dưới */
 .card-quick-view {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
   opacity: 0;
+  background: var(--glass-bg) !important;
+  color: var(--pink-dark) !important;
 }
-.hover-card:hover .card-quick-view {
-  bottom: 0 !important;
-  opacity: 1;
-}
+.hover-card:hover .card-quick-view { bottom: 0 !important; opacity: 1; }
 
 .glass-nav {
-  background: rgba(248, 187, 208, 0.85) !important;
+  background: var(--glass-bg) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.4s ease;
 }
 
 .wow-button {
-  background: linear-gradient(45deg, #E91E63, #d81b60, #E91E63);
+  background: linear-gradient(45deg, var(--pink-dark), #d81b60, var(--pink-dark));
   background-size: 200% auto;
   transition: 0.5s;
+  color: #fff !important;
 }
 .wow-button:hover {
   background-position: right center;
@@ -87,19 +93,17 @@ body {
   box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3) !important;
 }
 
-/* ================================ */
-/* RESPONSIVE CSS CHO NAVBAR        */
-/* ================================ */
 @media (max-width: 768px) {
-  .desktop-menu, .desktop-search {
-    display: none !important;
-  }
-  .mobile-menu-btn {
-    display: block !important;
-  }
+  .desktop-menu, .desktop-search { display: none !important; }
+  .mobile-menu-btn { display: block !important; }
 }
-@media (min-width: 769px) {
-  .mobile-menu-btn {
-    display: none !important;
-  }
+@media (min-width: 769px) { .mobile-menu-btn { display: none !important; } }
+
+/* Interactive Table Row Hover styles */
+.info-table tr {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.info-table tbody tr:hover td {
+  background-color: rgba(233, 30, 99, 0.05) !important;
+  color: var(--pink-dark) !important;
 }

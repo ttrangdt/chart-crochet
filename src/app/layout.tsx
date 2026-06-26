@@ -4,10 +4,10 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import AppLayout from "@/components/AppLayout";
 
-const inter = Inter({ subsets: ["latin", "vietnamese"] }); // Ép hỗ trợ tiếng Việt
+const inter = Inter({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
-  title: "Góc Của Len 🧶",
+  title: "Góc Của Len ",
   description: "Chia sẻ chart móc dệt và thành phẩm amigurumi đáng yêu",
 };
 
@@ -20,9 +20,7 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         <Providers>
-          <AppLayout>
-            {children}
-          </AppLayout>
+          <AppLayout>{children}</AppLayout>
         </Providers>
       </body>
     </html>

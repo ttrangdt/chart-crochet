@@ -1,44 +1,69 @@
 "use client";
 
-import React, { useState } from "react";
-import { ConfigProvider } from "antd";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+type ThemeContextType = {
+  isDarkMode: boolean;
+  toggleTheme: () => void;
+};
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+};
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDarkMode ? "dark" : "light",
+    );
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AntdRegistry>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: "#F8BBD0",     // Hồng hoa anh đào
-              colorTextBase: "#5D4037",    // Nâu gỗ trầm
-              colorBgContainer: "#ffffff",
-              fontFamily: "inherit",
-              borderRadius: 8,
-            },
-            components: {
-              Button: {
-                colorPrimary: "#E91E63",   // Hồng sen đậm làm điểm nhấn cho nút bấm
-                colorPrimaryHover: "#d81b60",
-                colorPrimaryActive: "#c2185b",
-                borderRadius: 20
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+      <QueryClientProvider client={queryClient}>
+        <AntdRegistry>
+          <ConfigProvider
+            theme={{
+              algorithm: isDarkMode
+                ? theme.darkAlgorithm
+                : theme.defaultAlgorithm,
+              token: {
+                colorPrimary: "#E91E63",
+                fontFamily: "inherit",
+                borderRadius: 12,
               },
-              Menu: {
-                itemColor: "#5D4037",
-                itemHoverColor: "#E91E63",
-                itemSelectedColor: "#E91E63",
-                horizontalItemSelectedColor: "#E91E63",
-              }
-            }
-          }}
-        >
-          {children}
-        </ConfigProvider>
-      </AntdRegistry>
-    </QueryClientProvider>
+              components: {
+                Button: {
+                  borderRadius: 20,
+                },
+                Menu: {
+                  itemHoverColor: "#E91E63",
+                  itemSelectedColor: "#E91E63",
+                  horizontalItemSelectedColor: "#E91E63",
+                },
+                Card: {
+                  colorBgContainer: "var(--bg-card)",
+                },
+              },
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
+      </QueryClientProvider>
+    </ThemeContext.Provider>
   );
 }

@@ -84,26 +84,25 @@ export default function AccessoriesView() {
               }
               style={{
                 borderRadius: "20px",
-                border: "1px solid #FFF5F7",
+                border: "1px solid var(--border-soft)",
                 boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
+                background: "var(--bg-card)",
               }}
               styles={{ body: { padding: "20px" } }}
             >
-              {/* Tag Còn Hàng  */}
               <Badge
                 status={p.status === "Còn hàng" ? "success" : "warning"}
                 text={
-                  <Text style={{ fontSize: "12px", color: "#666" }}>
+                  <Text style={{ fontSize: "12px", color: "var(--text-sub)" }}>
                     {p.status}
                   </Text>
                 }
                 style={{ marginBottom: "10px", display: "block" }}
               />
-
               <Title
                 level={5}
                 style={{
-                  color: "#5D4037",
+                  color: "var(--text-main)",
                   marginBottom: "15px",
                   fontWeight: "bold",
                   height: "45px",
@@ -122,13 +121,12 @@ export default function AccessoriesView() {
                 <Text
                   style={{
                     fontWeight: "900",
-                    color: "#E91E63",
+                    color: "var(--pink-dark)",
                     fontSize: "22px",
                   }}
                 >
                   {p.price}
                 </Text>
-                {/* Nút hành động mở shopee theo yêu cầu */}
                 <Button
                   type="primary"
                   size="large"
@@ -138,6 +136,7 @@ export default function AccessoriesView() {
                     border: "none",
                     borderRadius: "12px",
                     fontWeight: "bold",
+                    color: "#fff",
                   }}
                   icon={<LinkOutlined />}
                 >
@@ -153,11 +152,22 @@ export default function AccessoriesView() {
 
   return (
     <div className="animate-fade-in-up">
-      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "30px",
+          padding: "60px 40px",
+          background:
+            "linear-gradient(135deg, var(--pink-light) 0%, var(--pink-dark) 100%)",
+          borderRadius: "30px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+          border: "3px solid var(--border-soft)",
+        }}
+      >
         <Title
-          level={2}
+          level={1}
           style={{
-            color: "#E91E63",
+            color: "#fff",
             textTransform: "uppercase",
             letterSpacing: "2px",
             margin: 0,
@@ -165,18 +175,18 @@ export default function AccessoriesView() {
         >
           CỬA TIỆM PHỤ KIỆN
         </Title>
-        <Paragraph
+        <Text
           style={{
-            color: "#666",
+            color: "#fff",
             fontSize: "16px",
+            fontStyle: "italic",
             marginTop: "10px",
             display: "inline-block",
           }}
         >
-          Gợi ý dụng cụ tốt nhất để bạn sáng tạo thành phẩm tuyệt vời.
-        </Paragraph>
+          Mọi thứ bạn cần để bắt đầu hành trình ma thuật với len sợi.
+        </Text>
       </div>
-
       <Tabs
         defaultActiveKey="all"
         centered
