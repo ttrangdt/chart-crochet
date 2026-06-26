@@ -22,18 +22,30 @@ import {
   ContactsOutlined,
   MenuOutlined,
   HeartFilled,
+  HeartOutlined,
   MoonOutlined,
   SunOutlined,
 } from "@ant-design/icons";
 import { useTheme } from "./Providers"; // Hook điều khiển theme
+import ThemePicker from "./ThemePicker";
 
 const { Header, Content, Footer } = Layout;
 const { Text } = Typography;
 
+const sloganMap: Record<string, string> = {
+  pink: "Lưu giữ đam mê trong từng vòng ma thuật.",
+  matcha: "Móc từng sợi len, dệt nên những bình yên nhỏ bé.",
+  blueberry: "Sáng tạo thế giới tí hon từ những sợi len màu tím mộng mơ.",
+  lemon: "Bắt đầu ngày mới tràn đầy năng lượng cùng những mũi móc lấp lánh!",
+  dark: "Mỗi hàng len móc đêm muộn, thêu dệt giấc mơ êm đềm dưới ánh trăng.",
+};
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { theme, isDarkMode, toggleTheme } = useTheme();
+
+  const LogoIcon = theme === "matcha" ? HeartOutlined : HeartFilled;
 
   const menuItems = [
     {
@@ -150,7 +162,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 animation: "fadeInUp 1s ease 0s",
               }}
             >
-              <HeartFilled />
+              <LogoIcon />
             </div>
             <div
               style={{
@@ -236,7 +248,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Drawer
         title={
           <div style={{ color: "var(--pink-dark)", fontWeight: "bold" }}>
-            <HeartFilled /> Tiệm Len Nhỏ
+            <LogoIcon /> Tiệm Len Nhỏ
           </div>
         }
         placement="left"
@@ -290,7 +302,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       >
         <Space orientation="vertical" size="large">
           <div style={{ fontSize: "24px", color: "var(--pink-dark)" }}>
-            <HeartFilled />
+            <LogoIcon />
           </div>
           <Text
             style={{
@@ -303,7 +315,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             TIỆM LEN NHỎ
           </Text>
           <Text style={{ color: "var(--text-sub)" }}>
-            Lưu giữ đam mê trong từng vòng ma thuật.
+            {sloganMap[theme] || sloganMap.pink}
           </Text>
           <Text
             style={{
@@ -316,6 +328,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Text>
         </Space>
       </Footer>
+      <ThemePicker />
     </Layout>
   );
 }

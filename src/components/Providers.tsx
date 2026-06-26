@@ -5,7 +5,11 @@ import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+export type ThemeName = "pink" | "matcha" | "blueberry" | "lemon" | "dark";
+
 type ThemeContextType = {
+  theme: ThemeName;
+  setTheme: (theme: ThemeName) => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 };
@@ -18,21 +22,46 @@ export const useTheme = () => {
   return context;
 };
 
+const colorPrimaryMap: Record<ThemeName, string> = {
+  pink: "#E91E63",
+  matcha: "#2E7D32",
+  blueberry: "#9C27B0",
+  lemon: "#FBC02D",
+  dark: "#ff609a",
+};
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [themeName, setThemeState] = useState<ThemeName>("pink");
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      isDarkMode ? "dark" : "light",
-    );
-  }, [isDarkMode]);
+    const savedTheme = localStorage.getItem("theme-mood") as ThemeName;
+    if (savedTheme && ["pink", "matcha", "blueberry", "lemon", "dark"].includes(savedTheme)) {
+      setThemeState(savedTheme);
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    } else {
+      const savedDark = localStorage.getItem("theme");
+      const initialTheme = savedDark === "dark" ? "dark" : "pink";
+      setThemeState(initialTheme);
+      document.documentElement.setAttribute("data-theme", initialTheme);
+    }
+  }, []);
 
-  const toggleTheme = () => setIsDarkMode((prev) => !prev);
+  const setTheme = (newTheme: ThemeName) => {
+    setThemeState(newTheme);
+    localStorage.setItem("theme-mood", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
+
+  const isDarkMode = themeName === "dark";
+  const toggleTheme = () => {
+    setTheme(themeName === "dark" ? "pink" : "dark");
+  };
+
+  const primaryColor = colorPrimaryMap[themeName] || "#E91E63";
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: themeName, setTheme, isDarkMode, toggleTheme }}>
       <QueryClientProvider client={queryClient}>
         <AntdRegistry>
           <ConfigProvider
@@ -41,7 +70,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 ? theme.darkAlgorithm
                 : theme.defaultAlgorithm,
               token: {
-                colorPrimary: "#E91E63",
+                colorPrimary: primaryColor,
                 fontFamily: "inherit",
                 borderRadius: 12,
               },
@@ -50,9 +79,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                   borderRadius: 20,
                 },
                 Menu: {
-                  itemHoverColor: "#E91E63",
-                  itemSelectedColor: "#E91E63",
-                  horizontalItemSelectedColor: "#E91E63",
+                  itemHoverColor: primaryColor,
+                  itemSelectedColor: primaryColor,
+                  horizontalItemSelectedColor: primaryColor,
                 },
                 Card: {
                   colorBgContainer: "var(--bg-card)",

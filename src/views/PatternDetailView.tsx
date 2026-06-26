@@ -27,18 +27,22 @@ import {
   ArrowLeftOutlined,
   MessageOutlined,
   CheckCircleFilled,
+  CheckCircleOutlined,
   BookOutlined,
   ReloadOutlined,
   SoundOutlined,
   CheckOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import { useTheme } from "@/components/Providers";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function PatternDetailView() {
   const params = useParams();
   const router = useRouter();
+  const { theme } = useTheme();
+  const CheckIcon = theme === "matcha" ? CheckCircleOutlined : CheckCircleFilled;
   const pattern = mockData.charts.find((p) => p.id === params.id);
 
   if (!pattern)
@@ -614,7 +618,7 @@ export default function PatternDetailView() {
               >
                 🎒 Chuẩn Bị Nguyên Liệu & Dụng Cụ
               </Title>
-              <Tag color="var(--pink-dark)" style={{ border: "none", color: "#fff", padding: "4px 12px", borderRadius: "10px" }}>
+              <Tag style={{ background: "var(--pink-dark)", color: "#fff", border: "none", padding: "4px 12px", borderRadius: "10px", fontWeight: "bold" }}>
                 Độ khó: {pattern.difficulty}
               </Tag>
             </div>
@@ -799,7 +803,7 @@ export default function PatternDetailView() {
                         >
                           <span style={{ marginRight: "6px" }}>
                             {isCompleted ? (
-                              <CheckCircleFilled style={{ color: "var(--pink-dark)", fontSize: "13px" }} />
+                              <CheckIcon style={{ color: "var(--pink-dark)", fontSize: "13px" }} />
                             ) : (
                               <span style={{ 
                                 display: "inline-block", 
@@ -1051,7 +1055,7 @@ export default function PatternDetailView() {
                           {item.author}
                         </Text>
                         {item.verified && (
-                          <CheckCircleFilled
+                          <CheckIcon
                             style={{ color: "var(--pink-dark)" }}
                             title="Đã từng móc thành công"
                           />

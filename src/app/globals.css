@@ -4,7 +4,7 @@
   margin: 0;
 }
 
-:root {
+:root, [data-theme='pink'] {
   --bg-main: #FFF5F7;
   --bg-card: #ffffff;
   --text-main: #5D4037;
@@ -15,6 +15,45 @@
   --glass-bg: rgba(248, 187, 208, 0.85);
   --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #FFF5F7 0%, #FFFFFF 100%);
   --panel-bg: #FFF5F7;
+}
+
+[data-theme='matcha'] {
+  --bg-main: #F4F7F4;
+  --bg-card: #ffffff;
+  --text-main: #3E2723;
+  --text-sub: #5D4037;
+  --pink-light: #C8E6C9;
+  --pink-dark: #2E7D32;
+  --border-soft: #C8E6C9;
+  --glass-bg: rgba(200, 230, 201, 0.85);
+  --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #F4F7F4 0%, #FFFFFF 100%);
+  --panel-bg: #E8F5E9;
+}
+
+[data-theme='blueberry'] {
+  --bg-main: #F3E5F5;
+  --bg-card: #ffffff;
+  --text-main: #263238;
+  --text-sub: #455A64;
+  --pink-light: #E1BEE7;
+  --pink-dark: #9C27B0;
+  --border-soft: #E1BEE7;
+  --glass-bg: rgba(225, 190, 231, 0.85);
+  --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #F3E5F5 0%, #FFFFFF 100%);
+  --panel-bg: #ECE0F2;
+}
+
+[data-theme='lemon'] {
+  --bg-main: #FFFDF0;
+  --bg-card: #ffffff;
+  --text-main: #4E342E;
+  --text-sub: #795548;
+  --pink-light: #FFF9C4;
+  --pink-dark: #FBC02D;
+  --border-soft: #FFF59D;
+  --glass-bg: rgba(255, 249, 196, 0.85);
+  --layout-bg: url('https://www.transparenttextures.com/patterns/clean-textile.png'), linear-gradient(180deg, #FFFDF0 0%, #FFFFFF 100%);
+  --panel-bg: #FFFDE7;
 }
 
 [data-theme='dark'] {
@@ -33,8 +72,28 @@
 body {
   background: var(--layout-bg);
   color: var(--text-main);
-  transition: all 0.4s ease;
   min-height: 100vh;
+}
+
+/* Hiệu ứng loang chuyển đổi theme mượt mà */
+body, 
+.ant-layout, 
+.ant-layout-header, 
+.ant-layout-footer, 
+.ant-menu, 
+.ant-card, 
+.ant-typography, 
+.glass-nav, 
+.wow-button, 
+.info-table td, 
+.info-table th, 
+button, 
+input,
+div,
+span,
+p,
+a {
+  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
 }
 
 /* Các tuỳ chỉnh thẻ màu tự động theo biến */
