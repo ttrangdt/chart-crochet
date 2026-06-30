@@ -18,7 +18,9 @@ import {
   Checkbox,
   Rate,
   Input,
-  Radio
+  Radio,
+  notification,
+  Select,
 } from "antd";
 import mockData from "@/data/mockData.json";
 import Link from "next/link";
@@ -35,6 +37,10 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { useTheme } from "@/components/Providers";
+import { useBasket } from "@/components/BasketContext";
+import { useProjects } from "@/components/projects/ProjectsContext";
+import CreateProjectModal from "@/components/projects/CreateProjectModal";
+import ProjectProgressHelper from "@/components/projects/ProjectProgressHelper";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -43,6 +49,9 @@ export default function PatternDetailView() {
   const router = useRouter();
   const { theme } = useTheme();
   const CheckIcon = theme === "matcha" ? CheckCircleOutlined : CheckCircleFilled;
+  const { addProject, hasProject } = useBasket();
+  const [notifApi, notifContextHolder] = notification.useNotification();
+  const [basketAdding, setBasketAdding] = useState(false);
   const pattern = mockData.charts.find((p) => p.id === params.id);
 
   if (!pattern)
@@ -59,112 +68,42 @@ export default function PatternDetailView() {
       </div>
     );
 
-  // States for interactive chart tracker
-  const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({});
+  // Projects hook
+  const { projects, activeProjectIdMap, setActiveProjectForPattern, updateProjectProgress } = useProjects();
+  const patternProjects = projects.filter((p) => p.patternId === pattern.id);
+  const activeProjectId = activeProjectIdMap[pattern.id];
+  const activeProject = patternProjects.find((p) => p.id === activeProjectId) || patternProjects[0];
 
-  // States for row counter
-  const [rowCount, setRowCount] = useState<number>(0);
-  const [targetRows, setTargetRows] = useState<number>(10);
-  const [playAudio, setPlayAudio] = useState<boolean>(true);
+  // Modal visibility
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  // Load progress and counter on mount
-  useEffect(() => {
-    if (pattern) {
-      // Completed steps
-      const savedProgress = localStorage.getItem(`crochet-progress-${pattern.id}`);
-      if (savedProgress) {
-        try {
-          setCompletedSteps(JSON.parse(savedProgress));
-        } catch (e) {
-          console.error(e);
-        }
-      }
+  // Calculations for progress
+  const stepLists = pattern ? Object.values(pattern.content) : [];
+  const totalSteps = stepLists.reduce((sum, steps) => sum + (steps as string[]).length, 0);
 
-      // Counter
-      const savedCount = localStorage.getItem(`crochet-counter-${pattern.id}`);
-      if (savedCount !== null) {
-        setRowCount(Number(savedCount));
-      }
-      
-      // Target
-      const savedTarget = localStorage.getItem(`crochet-target-${pattern.id}`);
-      if (savedTarget !== null) {
-        setTargetRows(Number(savedTarget));
-      }
-
-      // Audio
-      const savedAudio = localStorage.getItem(`crochet-audio-${pattern.id}`);
-      if (savedAudio !== null) {
-        setPlayAudio(savedAudio === "true");
-      }
-    }
-  }, [pattern]);
-
-  // Audio synthethizer beep function
-  const playBeep = () => {
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // 800Hz tone
-      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15); // fade out quickly
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.15);
-    } catch (e) {
-      console.warn("Web Audio API not supported or user gesture needed.", e);
-    }
-  };
+  // Extract completedSteps from selected active project
+  const completedSteps = activeProject ? activeProject.completedSteps : {};
+  const completedCount = Object.keys(completedSteps).filter(k => completedSteps[k]).length;
+  const overallPercentage = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
 
   const toggleStep = (part: string, index: number) => {
     if (!pattern) return;
+    if (!activeProject) {
+      notifApi.warning({
+        message: "Chưa chọn Dự án móc",
+        description: "Vui lòng chọn hoặc bấm 'Tạo dự án mới với mẫu này' bên dưới để lưu tiến độ móc nhé. 🌸",
+        placement: "topRight",
+        duration: 3.5,
+      });
+      return;
+    }
     const stepKey = `${part}-${index}`;
     const updated = {
       ...completedSteps,
       [stepKey]: !completedSteps[stepKey],
     };
-    setCompletedSteps(updated);
-    localStorage.setItem(`crochet-progress-${pattern.id}`, JSON.stringify(updated));
+    updateProjectProgress(activeProject.id, updated, activeProject.rowCount);
   };
-
-  const resetProgress = () => {
-    if (!pattern) return;
-    setCompletedSteps({});
-    localStorage.removeItem(`crochet-progress-${pattern.id}`);
-  };
-
-  const updateCounter = (val: number) => {
-    if (!pattern || val < 0) return;
-    setRowCount(val);
-    localStorage.setItem(`crochet-counter-${pattern.id}`, String(val));
-    if (playAudio && val > rowCount) {
-      playBeep();
-    }
-  };
-
-  const updateTarget = (val: number | null) => {
-    if (!pattern || val === null || val < 1) return;
-    setTargetRows(val);
-    localStorage.setItem(`crochet-target-${pattern.id}`, String(val));
-  };
-
-  const toggleAudio = (checked: boolean) => {
-    if (!pattern) return;
-    setPlayAudio(checked);
-    localStorage.setItem(`crochet-audio-${pattern.id}`, String(checked));
-  };
-
-  // Calculations for progress
-  const stepLists = pattern ? Object.values(pattern.content) : [];
-  const totalSteps = stepLists.reduce((sum, steps) => sum + (steps as string[]).length, 0);
-  const completedCount = Object.keys(completedSteps).filter(k => completedSteps[k]).length;
-  const overallPercentage = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
 
   // States for prepared materials & tools checklist
   const [preparedItems, setPreparedItems] = useState<Record<string, boolean>>({});
@@ -314,11 +253,13 @@ export default function PatternDetailView() {
   };
 
   return (
-    <div
-      className="animate-fade-in-up"
-      style={{
-        maxWidth: "1000px",
-        margin: "0 auto",
+    <>
+      {notifContextHolder}
+      <div
+        className="animate-fade-in-up"
+        style={{
+          maxWidth: "1000px",
+          margin: "0 auto",
         background: "var(--bg-card)",
         padding: "40px",
         borderRadius: "32px",
@@ -430,168 +371,103 @@ export default function PatternDetailView() {
           </div>
 
           {/* TRÌNH TRỢ GIÚP ĐAN MÓC */}
-          <div
-            style={{
-              background: "var(--bg-card)",
-              padding: "24px",
-              borderRadius: "20px",
-              marginTop: "30px",
-              border: "2px solid var(--border-soft)",
-              boxShadow: "0 10px 25px rgba(233,30,99,0.05)",
-            }}
-          >
-            <Title
-              level={4}
+          {/* TRÌNH TRỢ GIÚP ĐAN MÓC (DỰ ÁN ĐA NHIỆM) */}
+          <div style={{ marginTop: "30px" }}>
+            {/* Lựa chọn Dự án */}
+            <div
               style={{
-                color: "var(--pink-dark)",
+                background: "var(--bg-card)",
+                padding: "20px",
+                borderRadius: "20px",
+                border: "2px solid var(--border-soft)",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.03)",
                 marginBottom: "20px",
-                marginTop: 0,
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                borderBottom: "1px dashed var(--border-soft)",
-                paddingBottom: "10px",
               }}
             >
-              <span role="img" aria-label="assistant">🪄</span> Trình Trợ Giúp Đan Móc
-            </Title>
-
-            {/* Tiến độ Chart */}
-            <div style={{ marginBottom: "25px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <Text strong style={{ color: "var(--text-main)" }}>Tiến trình Chart:</Text>
-                <Text style={{ color: "var(--text-sub)", fontSize: "14px" }}>
-                  {completedCount}/{totalSteps} hàng ({overallPercentage}%)
-                </Text>
-              </div>
-              <Progress 
-                percent={overallPercentage} 
-                strokeColor="var(--pink-dark)" 
-                trailColor="var(--panel-bg)"
-                style={{ marginBottom: "12px" }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Text italic style={{ fontSize: "13px", color: "var(--text-sub)", flex: 1, marginRight: "10px" }}>
-                  {overallPercentage === 0 && "Lên kim ngay nào bạn ơi! 🚀"}
-                  {overallPercentage > 0 && overallPercentage < 40 && "Vạn sự bắt đầu từ vòng ma thuật! 💪"}
-                  {overallPercentage >= 40 && overallPercentage < 80 && "Trông ra hình dáng siêu xinh rồi đó! 🌟"}
-                  {overallPercentage >= 80 && overallPercentage < 100 && "Sắp hoàn thành rồi, cố lên nốt thôi! 🔥"}
-                  {overallPercentage === 100 && "Hoàn thành tuyệt vời! Đăng thành phẩm liền nha! 🎉"}
-                </Text>
-                {completedCount > 0 && (
-                  <Button 
-                    size="small" 
-                    type="text" 
-                    danger 
-                    onClick={resetProgress}
-                    icon={<ReloadOutlined />}
-                    style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "4px" }}
-                  >
-                    Làm mới
-                  </Button>
-                )}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                <div>
+                  <Text strong style={{ color: "var(--text-main)", fontSize: "14px" }}>📁 Nhật ký Dự án:</Text>
+                  {patternProjects.length > 0 ? (
+                    <Select
+                      value={activeProject?.id}
+                      onChange={(val) => setActiveProjectForPattern(pattern.id, val)}
+                      style={{ width: "200px", marginLeft: "10px" }}
+                      options={patternProjects.map((p) => ({
+                        value: p.id,
+                        label: p.customName,
+                      }))}
+                    />
+                  ) : (
+                    <Text italic style={{ color: "var(--text-sub)", marginLeft: "10px" }}>Chưa có dự án nào</Text>
+                  )}
+                </div>
+                
+                <Button
+                  type="dashed"
+                  onClick={() => setCreateModalOpen(true)}
+                  style={{
+                    color: "var(--pink-dark)",
+                    borderColor: "var(--pink-dark)",
+                    borderRadius: "15px",
+                    fontWeight: "bold"
+                  }}
+                >
+                  ➕ Dự án mới
+                </Button>
               </div>
             </div>
 
-            <Divider style={{ margin: "15px 0", borderColor: "var(--border-soft)" }} />
-
-            {/* Bộ Đếm Hàng Móc */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-                <Text strong style={{ color: "var(--text-main)" }}>Bộ đếm hàng (Row Counter):</Text>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Text style={{ fontSize: "12px", color: "var(--text-sub)" }}>Âm thanh:</Text>
-                  <Switch 
-                    size="small" 
-                    checked={playAudio} 
-                    onChange={toggleAudio}
-                    style={{ background: playAudio ? "var(--pink-dark)" : "#ccc" }}
-                  />
-                </div>
-              </div>
-
-              <div 
-                style={{ 
-                  display: "flex", 
-                  justifyContent: "space-between", 
-                  alignItems: "center",
-                  background: "var(--panel-bg)",
-                  padding: "15px 20px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--border-soft)",
-                  marginBottom: "15px"
+            {/* Trình trợ giúp chi tiết */}
+            {activeProject ? (
+              <ProjectProgressHelper project={activeProject} stepCount={totalSteps} />
+            ) : (
+              <div
+                style={{
+                  background: "var(--bg-card)",
+                  padding: "40px 24px",
+                  borderRadius: "20px",
+                  border: "2px dashed var(--border-soft)",
+                  textAlign: "center",
+                  boxShadow: "0 10px 25px rgba(233,30,99,0.02)",
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <Text style={{ fontSize: "12px", color: "var(--text-sub)" }}>HÀNG HIỆN TẠI</Text>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-                    <span 
-                      style={{ 
-                        fontSize: "36px", 
-                        fontWeight: "900", 
-                        color: "var(--pink-dark)", 
-                        fontFamily: "monospace" 
-                      }}
-                    >
-                      {rowCount}
-                    </span>
-                    <span style={{ fontSize: "16px", color: "var(--text-sub)" }}>/ {targetRows}</span>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <Button 
-                    shape="circle" 
-                    size="large" 
-                    onClick={() => updateCounter(rowCount - 1)}
-                    disabled={rowCount === 0}
-                    style={{ border: "1px solid var(--border-soft)", display: "flex", justifyContent: "center", alignItems: "center" }}
-                  >
-                    -
-                  </Button>
-                  <Button 
-                    type="primary" 
-                    shape="circle" 
-                    size="large" 
-                    onClick={() => updateCounter(rowCount + 1)}
-                    style={{ 
-                      background: "var(--pink-dark)", 
-                      border: "none", 
-                      boxShadow: "0 4px 10px rgba(233, 30, 99, 0.3)",
-                      fontWeight: "bold",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    +
-                  </Button>
-                </div>
+                <div style={{ fontSize: "36px", marginBottom: "15px" }}>🧶</div>
+                <Title level={5} style={{ color: "var(--text-main)", marginTop: 0 }}>Bạn chưa tạo Dự án móc cho mẫu này</Title>
+                <Paragraph style={{ color: "var(--text-sub)", fontSize: "13px", padding: "0 10px" }}>
+                  Hãy bắt đầu một dự án mới để ghi lưu nhật liệu mã màu sợi, lô len, ghi chú và tự động đồng bộ đếm hàng dòng móc nhé! ✨
+                </Paragraph>
+                <Button
+                  type="primary"
+                  onClick={() => setCreateModalOpen(true)}
+                  style={{
+                    background: "var(--pink-dark)",
+                    border: "none",
+                    borderRadius: "15px",
+                    fontWeight: "bold",
+                    marginTop: "10px",
+                    padding: "0 25px"
+                  }}
+                >
+                  Bắt đầu ngay 🚀
+                </Button>
               </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Text style={{ fontSize: "13px", color: "var(--text-sub)" }}>Đặt mục tiêu:</Text>
-                  <InputNumber 
-                    min={1} 
-                    value={targetRows} 
-                    onChange={updateTarget}
-                    style={{ width: "70px", borderRadius: "8px" }}
-                  />
-                </div>
-                {rowCount > 0 && (
-                  <Button 
-                    size="small" 
-                    type="text" 
-                    onClick={() => updateCounter(0)}
-                    style={{ fontSize: "12px", color: "var(--text-sub)" }}
-                  >
-                    Reset Bộ Đếm
-                  </Button>
-                )}
-              </div>
-            </div>
+            )}
           </div>
+
+          {/* CreatProjectModal */}
+          <CreateProjectModal
+            pattern={{
+              id: pattern.id,
+              name: pattern.name,
+              category: pattern.category,
+              difficulty: String(pattern.difficulty_stars || 3),
+              image_url: pattern.image_url,
+              materials: pattern.materials || [],
+              tools: pattern.tools || [],
+            }}
+            visible={createModalOpen}
+            onCancel={() => setCreateModalOpen(false)}
+          />
         </Col>
 
         <Col xs={24} md={12}>
@@ -704,6 +580,52 @@ export default function PatternDetailView() {
                 </div>
               </Col>
             </Row>
+
+            {/* NÚT BỎ VÀO GIỎ DỰ ÁN */}
+            <div style={{ marginTop: "20px" }}>
+              <Button
+                size="large"
+                block
+                onClick={() => {
+                  if (!pattern) return;
+                  setBasketAdding(true);
+                  const alreadyIn = hasProject(pattern.id);
+                  addProject({
+                    patternId: pattern.id,
+                    name: pattern.name,
+                    imageUrl: pattern.image_url,
+                    materials: pattern.materials,
+                    tools: pattern.tools,
+                  });
+                  notifApi.success({
+                    message: alreadyIn ? "Đã thêm 1 mẫu nữa! 🧺" : "Thêm vào Giỏ thành công!",
+                    description: (
+                      <span>
+                        Nguyên liệu mẫu <strong>{pattern.name}</strong> đã vào Giỏ dự án của bạn rồi nhé! 🌸
+                      </span>
+                    ),
+                    placement: "topRight",
+                    duration: 2.5,
+                  });
+                  setTimeout(() => setBasketAdding(false), 600);
+                }}
+                style={{
+                  background: "linear-gradient(45deg, var(--pink-dark), #d81b60)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "16px",
+                  height: "52px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  letterSpacing: "0.5px",
+                  boxShadow: "0 6px 18px rgba(233, 30, 99, 0.3)",
+                  transform: basketAdding ? "scale(0.96)" : "scale(1)",
+                  transition: "transform 0.15s ease",
+                }}
+              >
+                🧺 Bỏ tất cả nguyên liệu mẫu này vào Giỏ đan!
+              </Button>
+            </div>
           </div>
 
           <div 
@@ -1150,5 +1072,6 @@ export default function PatternDetailView() {
         />
       </FloatButton.Group>
     </div>
+    </>
   );
 }

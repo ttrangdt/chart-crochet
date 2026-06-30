@@ -4,8 +4,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BasketProvider } from "./BasketContext";
+import { ProjectsProvider } from "./projects/ProjectsContext";
 
 export type ThemeName = "pink" | "matcha" | "blueberry" | "lemon" | "dark";
+
 
 type ThemeContextType = {
   theme: ThemeName;
@@ -89,7 +92,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
               },
             }}
           >
-            {children}
+            <BasketProvider>
+              <ProjectsProvider>
+                {children}
+              </ProjectsProvider>
+            </BasketProvider>
           </ConfigProvider>
         </AntdRegistry>
       </QueryClientProvider>

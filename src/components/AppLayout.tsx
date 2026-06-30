@@ -25,8 +25,10 @@ import {
   HeartOutlined,
   MoonOutlined,
   SunOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
-import { useTheme } from "./Providers"; // Hook điều khiển theme
+import { useTheme } from "./Providers";
+import { useBasket } from "./BasketContext";
 import ThemePicker from "./ThemePicker";
 
 const { Header, Content, Footer } = Layout;
@@ -44,6 +46,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, isDarkMode, toggleTheme } = useTheme();
+  const { totalItems } = useBasket();
 
   const LogoIcon = theme === "matcha" ? HeartOutlined : HeartFilled;
 
@@ -192,7 +195,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           />
         </div>
 
-        {/* Nhóm công cụ bên phải (Search + Dark Mode) */}
+        {/* Nhóm công cụ bên phải (Basket + Search + Dark Mode) */}
         <div
           className="desktop-search"
           style={{
@@ -203,6 +206,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             gap: "15px",
           }}
         >
+          {/* Icon Giỏ Lấn */}
+          <Link href="/basket" style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+            <Button
+              type="text"
+              icon={<ShoppingOutlined style={{ fontSize: "22px", color: "var(--pink-dark)" }} />}
+              style={{ padding: "4px 8px", display: "flex", alignItems: "center", justifyContent: "center" }}
+            />
+            {totalItems > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-2px",
+                  right: "-2px",
+                  background: "var(--pink-dark)",
+                  color: "#fff",
+                  borderRadius: "50%",
+                  width: "18px",
+                  height: "18px",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  animation: "basketBadgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                }}
+              >
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
+            )}
+          </Link>
           <Switch
             checkedChildren={<MoonOutlined />}
             unCheckedChildren={<SunOutlined />}
