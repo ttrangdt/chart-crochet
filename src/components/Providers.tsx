@@ -5,7 +5,7 @@ import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BasketProvider } from "./BasketContext";
-import { ProjectsProvider } from "./projects/ProjectsContext";
+import { ProjectsProvider } from "@/features/projects";
 
 export type ThemeName = "pink" | "matcha" | "blueberry" | "lemon" | "dark";
 

@@ -38,9 +38,7 @@ import {
 } from "@ant-design/icons";
 import { useTheme } from "@/components/Providers";
 import { useBasket } from "@/components/BasketContext";
-import { useProjects } from "@/components/projects/ProjectsContext";
-import CreateProjectModal from "@/components/projects/CreateProjectModal";
-import ProjectProgressHelper from "@/components/projects/ProjectProgressHelper";
+import { useProjects, CreateProjectModal, ProjectProgressHelper } from "@/features/projects";
 
 const { Title, Paragraph, Text } = Typography;
 

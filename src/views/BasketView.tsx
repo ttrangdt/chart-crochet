@@ -15,8 +15,7 @@ import {
 import { DeleteOutlined, ShoppingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { useBasket, BasketProject } from "@/components/BasketContext";
-import { useProjects, ActiveProject } from "@/components/projects/ProjectsContext";
-import ProjectList from "@/components/projects/ProjectList";
+import { useProjects, ActiveProject, ProjectList } from "@/features/projects";
 
 const { Title, Text } = Typography;
 
