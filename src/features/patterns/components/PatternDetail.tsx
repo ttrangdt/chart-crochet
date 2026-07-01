@@ -85,6 +85,49 @@ export default function PatternDetailView() {
   const [selectedSymbol, setSelectedSymbol] = useState<string | undefined>(undefined);
   const [btnHover, setBtnHover] = useState(false);
 
+  // Row-by-Row Notes states
+  const [rowNotes, setRowNotes] = useState<Record<string, string>>({});
+  const [editingNotePath, setEditingNotePath] = useState<string | null>(null);
+  const [noteInputValue, setNoteInputValue] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && pattern) {
+      const initialNotes: Record<string, string> = {};
+      Object.entries(pattern.content).forEach(([part, steps]) => {
+        (steps as string[]).forEach((_, index) => {
+          const key = `${pattern.id}-${part}-${index}-note`;
+          const val = localStorage.getItem(key);
+          if (val) {
+            initialNotes[`${part}-${index}`] = val;
+          }
+        });
+      });
+      setRowNotes(initialNotes);
+    }
+  }, [pattern]);
+
+  const handleSaveNote = (part: string, index: number, noteText: string) => {
+    const noteKey = `${pattern.id}-${part}-${index}-note`;
+    if (noteText.trim()) {
+      localStorage.setItem(noteKey, noteText.trim());
+      setRowNotes((prev) => ({ ...prev, [`${part}-${index}`]: noteText.trim() }));
+    } else {
+      localStorage.removeItem(noteKey);
+      setRowNotes((prev) => {
+        const update = { ...prev };
+        delete update[`${part}-${index}`];
+        return update;
+      });
+    }
+    setEditingNotePath(null);
+  };
+
+  const startEditingNote = (part: string, index: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingNotePath(`${part}-${index}`);
+    setNoteInputValue(rowNotes[`${part}-${index}`] || "");
+  };
+
   const handleOpenDictionary = (symbol?: string) => {
     setSelectedSymbol(symbol);
     setDictOpen(true);
@@ -771,13 +814,12 @@ export default function PatternDetailView() {
                       return (
                         <tr
                           key={index}
-                          onClick={() => toggleStep(part, index)}
                           style={{
-                            cursor: "pointer",
                             transition: "all 0.3s ease",
                           }}
                         >
                           <td
+                            onClick={() => toggleStep(part, index)}
                             style={{
                               fontWeight: "bold",
                               width: "95px",
@@ -788,6 +830,7 @@ export default function PatternDetailView() {
                               backgroundColor: tdBg,
                               opacity: cellOpacity,
                               transition: "all 0.3s ease",
+                              cursor: "pointer",
                             }}
                           >
                             <span style={{ marginRight: "6px" }}>
@@ -807,6 +850,7 @@ export default function PatternDetailView() {
                             {rowSplit[0]}
                           </td>
                           <td
+                            onClick={() => toggleStep(part, index)}
                             style={{
                               color: isCompleted ? "var(--text-sub)" : "var(--text-main)",
                               fontWeight: "500",
@@ -816,9 +860,95 @@ export default function PatternDetailView() {
                               opacity: cellOpacity,
                               textDecoration: isCompleted ? "line-through" : "none",
                               transition: "all 0.3s ease",
+                              cursor: "pointer",
                             }}
                           >
-                            {highlightAbbreviations(rowSplit[1] ? rowSplit[1].trim() : step, notationSystem, handleOpenDictionary)}
+                            <div>
+                              {highlightAbbreviations(rowSplit[1] ? rowSplit[1].trim() : step, notationSystem, handleOpenDictionary)}
+                            </div>
+                            
+                            {/* Hiển thị Ghi chú dòng nếu có */}
+                            {rowNotes[`${part}-${index}`] && (
+                              <div
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                  fontSize: "12.5px",
+                                  marginTop: "8px",
+                                  color: "var(--text-main)",
+                                  background: "var(--panel-bg)",
+                                  padding: "6px 12px",
+                                  borderRadius: "8px",
+                                  display: "inline-block",
+                                  borderLeft: "3px solid var(--pink-dark)",
+                                  boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
+                                  boxSizing: "border-box",
+                                }}
+                              >
+                                <span style={{ marginRight: "4px" }}>📝</span> <i>{rowNotes[`${part}-${index}`]}</i>
+                              </div>
+                            )}
+
+                            {/* Ô nhập liệu ghi chú dòng ẩn hiện inline */}
+                            {editingNotePath === `${part}-${index}` && (
+                              <div 
+                                style={{ marginTop: "10px", display: "flex", gap: "8px", alignItems: "center", width: "100%" }} 
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Input
+                                  size="small"
+                                  placeholder="Ghi chú số dòng, màu len hoặc ghi nhớ tại đây..."
+                                  value={noteInputValue}
+                                  onChange={(e) => setNoteInputValue(e.target.value)}
+                                  onPressEnter={() => handleSaveNote(part, index, noteInputValue)}
+                                  style={{ maxWidth: "320px", borderRadius: "8px", height: "30px" }}
+                                  autoFocus
+                                />
+                                <Button 
+                                  size="small" 
+                                  type="primary" 
+                                  style={{ borderRadius: "6px" }}
+                                  onClick={() => handleSaveNote(part, index, noteInputValue)}
+                                >
+                                  Lưu
+                                </Button>
+                                <Button 
+                                  size="small" 
+                                  onClick={() => setEditingNotePath(null)}
+                                  style={{ borderRadius: "6px" }}
+                                >
+                                  Hủy
+                                </Button>
+                              </div>
+                            )}
+                          </td>
+                          <td
+                            style={{
+                              width: "55px",
+                              textAlign: "center",
+                              borderBottom: "1px solid var(--border-soft)",
+                              padding: "12px",
+                              backgroundColor: tdBg,
+                              opacity: cellOpacity,
+                              transition: "all 0.3s ease",
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Tooltip title={rowNotes[`${part}-${index}`] ? "Sửa ghi chú dòng" : "Thêm ghi chú dòng"}>
+                              <Button
+                                type="text"
+                                size="small"
+                                icon={rowNotes[`${part}-${index}`] 
+                                  ? <BookOutlined style={{ color: "var(--pink-dark)" }} /> 
+                                  : <MessageOutlined style={{ color: "var(--text-sub)" }} />
+                                }
+                                onClick={(e) => startEditingNote(part, index, e)}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              />
+                            </Tooltip>
                           </td>
                         </tr>
                       );
