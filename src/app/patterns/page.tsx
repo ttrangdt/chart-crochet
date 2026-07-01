@@ -1,5 +1,5 @@
-import PatternListView from "@/views/PatternListView";
+import { PatternList } from "@/features/patterns";
 
 export default function PatternsPage() {
-  return <PatternListView />;
+  return <PatternList />;
 }

@@ -1,2 +1,2 @@
-import AccessoriesView from "@/views/AccessoriesView";
-export default function Page() { return <AccessoriesView />; }
+import { AccessoriesList } from "@/features/accessories";
+export default function Page() { return <AccessoriesList />; }

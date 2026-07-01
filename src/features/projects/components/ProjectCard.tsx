@@ -127,7 +127,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
             percent={progressPercent}
             size="small"
             strokeColor={project.status === "completed" ? "#2E7D32" : "var(--pink-dark)"}
-            trailColor="var(--panel-bg)"
+            railColor="var(--panel-bg)"
           />
         </div>
 
@@ -219,7 +219,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
         onOk={() => form.submit()}
         okText="Lưu lại"
         cancelText="Bỏ qua"
-        destroyOnClose
+        destroyOnHidden
         style={{ borderRadius: "20px" }}
       >
         <Form form={form} layout="vertical" onFinish={handleEditSubmit} style={{ marginTop: "15px" }}>

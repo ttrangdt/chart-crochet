@@ -27,9 +27,8 @@ import {
   SunOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
-import { useTheme } from "./Providers";
-import { useBasket } from "./BasketContext";
-import ThemePicker from "./ThemePicker";
+import { useTheme, ThemePicker } from "@/features/theme";
+import { useBasket } from "@/features/basket";
 
 const { Header, Content, Footer } = Layout;
 const { Text } = Typography;

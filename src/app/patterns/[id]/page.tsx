@@ -1,5 +1,5 @@
-import PatternDetailView from "@/views/PatternDetailView";
+import { PatternDetail } from "@/features/patterns";
 
 export default function PatternDetailPage() {
-  return <PatternDetailView />;
+  return <PatternDetail />;
 }

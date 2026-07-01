@@ -1,4 +1,4 @@
-import BasketView from "@/views/BasketView";
+import { BasketView } from "@/features/basket";
 
 export const metadata = {
   title: "Giỏ Len Của Tôi – Tiệm Len Nhỏ",

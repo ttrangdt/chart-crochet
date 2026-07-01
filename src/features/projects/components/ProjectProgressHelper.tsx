@@ -78,7 +78,7 @@ export default function ProjectProgressHelper({
         <Progress
           percent={overallPercentage}
           strokeColor="var(--pink-dark)"
-          trailColor="var(--panel-bg)"
+          railColor="var(--panel-bg)"
           style={{ marginBottom: "12px" }}
         />
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
