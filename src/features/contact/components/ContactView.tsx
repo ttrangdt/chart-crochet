@@ -1,196 +1,147 @@
 "use client";
 
-import React from "react";
-import { Typography, Input, Button, Form, Tooltip } from "antd";
+import React, { useState } from "react";
+import { Typography, Input, Button, Form, Tooltip, notification } from "antd";
 import {
   MailOutlined,
   FacebookOutlined,
   InstagramOutlined,
   TikTokOutlined,
+  UserOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
+import styles from "./ContactView.module.css";
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 export default function ContactView() {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (values: any) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      notification.success({
+        message: "Gửi lời chào thành công! 🌸",
+        description: `Cảm ơn ${values.name || "bạn"} đã gửi thư. Tiệm Len Nhỏ sẽ phản hồi lại bạn qua email ${values.email} trong thời gian sớm nhất!`,
+        placement: "topRight",
+        duration: 5,
+      });
+      form.resetFields();
+    }, 1200);
+  };
+
   return (
-    <div
-      className="animate-fade-in-up"
-      style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}
-    >
-      <div
-        style={{
-          background: "var(--bg-card)",
-          maxWidth: "650px",
-          width: "100%",
-          padding: "50px",
-          borderRadius: "40px",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.1)",
-          border: "2px solid var(--border-soft)",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div
-            style={{
-              fontSize: "50px",
-              color: "var(--pink-dark)",
-              marginBottom: "10px",
-            }}
-          >
+    <div className={`animate-fade-in-up ${styles.container}`}>
+      <div className={styles.card}>
+        {/* Thanh ruy băng sắc màu trang trí phần đầu */}
+        <div className={styles.banner} />
+
+        <div className={styles.headerTextGroup}>
+          <div className={styles.headerIcon}>
             <MailOutlined />
           </div>
-          <Title
-            level={2}
-            style={{
-              color: "var(--text-main)",
-              margin: 0,
-              textTransform: "uppercase",
-            }}
-          >
+          <Title level={2} className={styles.title}>
             GỬI LỜI CHÀO TỚI TIỆM
           </Title>
-          <Paragraph
-            style={{
-              color: "var(--text-sub)",
-              marginTop: "15px",
-              fontSize: "16px",
-              background: "var(--panel-bg)",
-              padding: "15px",
-              borderRadius: "15px",
-              display: "inline-block",
-            }}
-          >
+          <Paragraph className={styles.paragraph}>
             "Bạn đang loay hoay vòng tròn ma thuật? Gặp khó khăn khi móc?
             <br /> Nhắn tin cho mình nhé!"
           </Paragraph>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "20px",
-            marginBottom: "40px",
-          }}
-        >
+        {/* Cụm mạng xã hội */}
+        <div className={styles.socialGroup}>
           <Tooltip title="Group chém gió học móc">
-            <div
-              className="hover-card"
-              style={{
-                width: "50px",
-                height: "50px",
-                background: "#1877F2",
-                borderRadius: "50%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                color: "#fff",
-                fontSize: "24px",
-              }}
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialBtn} ${styles.facebook}`}
             >
               <FacebookOutlined />
-            </div>
+            </a>
           </Tooltip>
           <Tooltip title="Gallery ảnh xinh xỉu">
-            <div
-              className="hover-card"
-              style={{
-                width: "50px",
-                height: "50px",
-                background:
-                  "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
-                borderRadius: "50%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                color: "#fff",
-                fontSize: "24px",
-              }}
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialBtn} ${styles.instagram}`}
             >
               <InstagramOutlined />
-            </div>
+            </a>
           </Tooltip>
           <Tooltip title="Video gỡ rối 1 phút">
-            <div
-              className="hover-card"
-              style={{
-                width: "50px",
-                height: "50px",
-                background: "#000",
-                borderRadius: "50%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                color: "#fff",
-                fontSize: "24px",
-              }}
+            <a
+              href="https://tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.socialBtn} ${styles.tiktok}`}
             >
               <TikTokOutlined />
-            </div>
+            </a>
           </Tooltip>
         </div>
 
-        <Form layout="vertical">
+        <Form 
+          form={form} 
+          layout="vertical" 
+          onFinish={handleSubmit}
+          requiredMark={false}
+        >
           <Form.Item
+            name="name"
             label={
-              <span style={{ fontWeight: "bold", color: "var(--text-main)" }}>
+              <span className={styles.inputLabel}>
                 Tên của bạn
               </span>
             }
+            rules={[{ required: true, message: "Vui lòng nhập tên của bạn nhé!" }]}
           >
             <Input
               size="large"
-              style={{
-                borderRadius: "16px",
-                border: "2px solid var(--border-soft)",
-                padding: "10px 15px",
-                background: "var(--bg-card)",
-                color: "var(--text-main)",
-              }}
+              prefix={<UserOutlined style={{ color: "var(--text-sub)", opacity: 0.5 }} />}
+              className={styles.formInput}
               placeholder="Ví dụ: Rose Nguyễn..."
             />
           </Form.Item>
 
           <Form.Item
+            name="email"
             label={
-              <span style={{ fontWeight: "bold", color: "var(--text-main)" }}>
+              <span className={styles.inputLabel}>
                 Địa chỉ Email (Để tiệm phản hồi)
               </span>
             }
+            rules={[
+              { required: true, message: "Vui lòng nhập địa chỉ email!" },
+              { type: "email", message: "Email không phù hợp định dạng rồi!" }
+            ]}
           >
             <Input
               size="large"
               type="email"
-              style={{
-                borderRadius: "16px",
-                border: "2px solid var(--border-soft)",
-                padding: "10px 15px",
-                background: "var(--bg-card)",
-                color: "var(--text-main)",
-              }}
+              prefix={<MailOutlined style={{ color: "var(--text-sub)", opacity: 0.5 }} />}
+              className={styles.formInput}
               placeholder="rose@gmail.com..."
             />
           </Form.Item>
 
           <Form.Item
+            name="message"
             label={
-              <span style={{ fontWeight: "bold", color: "var(--text-main)" }}>
+              <span className={styles.inputLabel}>
                 Câu hỏi của bạn
               </span>
             }
+            rules={[{ required: true, message: "Vui lòng nhập lời nhắn gửi tới tiệm!" }]}
           >
             <TextArea
               rows={5}
-              style={{
-                borderRadius: "16px",
-                border: "2px solid var(--border-soft)",
-                padding: "15px",
-                background: "var(--bg-card)",
-                color: "var(--text-main)",
-              }}
+              className={styles.formInput}
               placeholder="Mình không hiểu cách làm ở dòng R4 phần Đầu..."
             />
           </Form.Item>
@@ -199,15 +150,10 @@ export default function ContactView() {
             type="primary"
             size="large"
             block
-            className="wow-button"
-            style={{
-              borderRadius: "20px",
-              height: "60px",
-              fontWeight: "bold",
-              fontSize: "18px",
-              border: "none",
-              marginTop: "20px",
-            }}
+            htmlType="submit"
+            loading={loading}
+            className={`wow-button ${styles.submitBtn}`}
+            icon={<SendOutlined />}
           >
             GỬI ĐI THÔI
           </Button>

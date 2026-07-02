@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Typography, Progress, Button, Divider, Switch, InputNumber } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import { ActiveProject, useProjects } from "../stores/ProjectsContext";
@@ -21,6 +21,88 @@ export default function ProjectProgressHelper({
   const { updateProjectProgress, updateProjectState } = useProjects();
   const [playAudio, setPlayAudio] = useState(true);
   const { playBeep } = useAudioBeep();
+
+  // Stop watch states
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+
+  // Pricing inputs
+  const [materialCost, setMaterialCost] = useState(30000);
+  const [hourlyWage, setHourlyWage] = useState(25000);
+  const [taxProfit, setTaxProfit] = useState(15000);
+  const [showEstimator, setShowEstimator] = useState(false);
+
+  // Load timer status & pricing inputs on project change
+  useEffect(() => {
+    const savedTime = localStorage.getItem(`crochet-timer-${project.id}`);
+    setSeconds(savedTime ? parseInt(savedTime, 10) : 0);
+    setIsActive(false); // Stop when changing projects
+
+    const mat = localStorage.getItem(`crochet-price-material-${project.id}`);
+    const wage = localStorage.getItem(`crochet-price-wage-${project.id}`);
+    const profit = localStorage.getItem(`crochet-price-profit-${project.id}`);
+    setMaterialCost(mat ? parseInt(mat, 10) : 30000);
+    setHourlyWage(wage ? parseInt(wage, 10) : 25000);
+    setTaxProfit(profit ? parseInt(profit, 10) : 15000);
+  }, [project.id]);
+
+  // Stopwatch interval hook
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds((prev) => {
+          const nextSec = prev + 1;
+          localStorage.setItem(`crochet-timer-${project.id}`, String(nextSec));
+          return nextSec;
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, project.id]);
+
+  const handleStart = () => setIsActive(true);
+  const handlePause = () => setIsActive(false);
+  const handleResetTimer = () => {
+    setIsActive(false);
+    setSeconds(0);
+    localStorage.setItem(`crochet-timer-${project.id}`, "0");
+  };
+
+  const updateMaterial = (val: number | null) => {
+    const clean = val || 0;
+    setMaterialCost(clean);
+    localStorage.setItem(`crochet-price-material-${project.id}`, String(clean));
+  };
+  const updateHourly = (val: number | null) => {
+    const clean = val || 0;
+    setHourlyWage(clean);
+    localStorage.setItem(`crochet-price-wage-${project.id}`, String(clean));
+  };
+  const updateProfit = (val: number | null) => {
+    const clean = val || 0;
+    setTaxProfit(clean);
+    localStorage.setItem(`crochet-price-profit-${project.id}`, String(clean));
+  };
+
+  // Format Helper
+  const formatTime = (totalSec: number) => {
+    const hrs = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    return [
+      hrs.toString().padStart(2, "0"),
+      mins.toString().padStart(2, "0"),
+      secs.toString().padStart(2, "0"),
+    ].join(":");
+  };
+
+  // Calculations
+  const hoursSpent = seconds / 3600;
+  const laborCost = Math.round(hoursSpent * hourlyWage);
+  const recommendedPrice = materialCost + laborCost + taxProfit;
 
   const completedCount = Object.keys(project.completedSteps).filter(
     (k) => project.completedSteps[k]
@@ -75,12 +157,53 @@ export default function ProjectProgressHelper({
             {completedCount}/{stepCount} hàng ({overallPercentage}%)
           </Text>
         </div>
-        <Progress
-          percent={overallPercentage}
-          strokeColor="var(--pink-dark)"
-          railColor="var(--panel-bg)"
-          style={{ marginBottom: "12px" }}
-        />
+        {/* Custom Animated Progress Bar with Rolling Yarn Ball 🧶 */}
+        <div 
+          style={{ 
+            position: "relative", 
+            height: "12px", 
+            background: "var(--panel-bg)", 
+            borderRadius: "10px", 
+            marginBottom: "16px",
+            marginTop: "12px",
+            border: "1px solid var(--border-soft)",
+            overflow: "visible"
+          }}
+        >
+          <div 
+            style={{ 
+              width: `${overallPercentage}%`, 
+              height: "100%", 
+              background: "linear-gradient(90deg, var(--pink-light), var(--pink-dark))", 
+              borderRadius: "10px",
+              transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)"
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "-8px",
+              left: `calc(${overallPercentage}% - 14px)`,
+              fontSize: "22px",
+              lineHeight: 1,
+              transition: "left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              userSelect: "none",
+              pointerEvents: "none",
+              animation: overallPercentage > 0 ? "yarn-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)" : "none"
+            }}
+            key={overallPercentage}
+          >
+            🧶
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes yarn-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.25); }
+            100% { transform: rotate(360deg) scale(1); }
+          }
+        `}</style>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text italic style={{ fontSize: "13px", color: "var(--text-sub)", flex: 1, marginRight: "10px" }}>
             {overallPercentage === 0 && "Lên kim ngay nào bạn ơi! 🚀"}
@@ -200,6 +323,206 @@ export default function ProjectProgressHelper({
             </Button>
           )}
         </div>
+      </div>
+
+      <Divider style={{ margin: "20px 0", borderColor: "var(--border-soft)" }} />
+
+      {/* BỘ BẤM GIỜ MÓC LEN */}
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+          <Text strong style={{ color: "var(--text-main)" }}>⏱️ Bộ bấm giờ móc (Timer):</Text>
+          {seconds > 0 && (
+            <Button
+              size="small"
+              type="text"
+              onClick={handleResetTimer}
+              icon={<ReloadOutlined style={{ fontSize: "11px" }} />}
+              style={{ fontSize: "12px", color: "var(--text-sub)" }}
+            >
+              Reset Giờ
+            </Button>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            background: "var(--bg-card)",
+            padding: "15px 20px",
+            borderRadius: "16px",
+            border: "1px solid var(--border-soft)",
+            marginBottom: "15px",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Text style={{ fontSize: "11px", color: "var(--text-sub)", letterSpacing: "1px" }}>THỜI GIAN TÍCH LŨY</Text>
+            <span
+              style={{
+                fontSize: "30px",
+                fontWeight: "900",
+                color: isActive ? "var(--pink-dark)" : "var(--text-sub)",
+                fontFamily: "monospace",
+                transition: "color 0.3s ease",
+              }}
+            >
+              {formatTime(seconds)}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            {!isActive ? (
+              <Button
+                type="primary"
+                onClick={handleStart}
+                style={{
+                  background: "#2E7D32",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontWeight: "bold",
+                  height: "40px",
+                }}
+              >
+                Bắt đầu ⏱️
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                danger
+                onClick={handlePause}
+                style={{
+                  background: "#E65100",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontWeight: "bold",
+                  height: "40px",
+                }}
+              >
+                Tạm dừng ⏸️
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: "20px 0", borderColor: "var(--border-soft)" }} />
+
+      {/* MÁY TÍNH ĐỊNH GIÁ THÀNH PHẨM */}
+      <div>
+        <div 
+          style={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center", 
+            cursor: "pointer",
+            padding: "5px 0"
+          }}
+          onClick={() => setShowEstimator(!showEstimator)}
+        >
+          <Text strong style={{ color: "var(--text-main)" }}>
+            💰 Định giá gợi ý thành phẩm:
+          </Text>
+          <Text style={{ color: "var(--pink-dark)", fontSize: "12px", fontWeight: "bold" }}>
+            {showEstimator ? "Thu gọn ▲" : "Chi tiết ▼"}
+          </Text>
+        </div>
+
+        {showEstimator && (
+          <div 
+            style={{ 
+              marginTop: "15px",
+              background: "var(--panel-bg)",
+              padding: "16px",
+              borderRadius: "16px",
+              border: "1px solid var(--border-soft)"
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ fontSize: "13px" }}>Chi phí nguyên liệu (đ):</Text>
+                <InputNumber
+                  min={0}
+                  step={5000}
+                  value={materialCost}
+                  onChange={updateMaterial}
+                  style={{ width: "110px", borderRadius: "8px" }}
+                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ fontSize: "13px" }}>Lương / giờ mong muốn (đ):</Text>
+                <InputNumber
+                  min={0}
+                  step={5000}
+                  value={hourlyWage}
+                  onChange={updateHourly}
+                  style={{ width: "110px", borderRadius: "8px" }}
+                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ fontSize: "13px" }}>Khấu hao & Tiền lãi (đ):</Text>
+                <InputNumber
+                  min={0}
+                  step={5000}
+                  value={taxProfit}
+                  onChange={updateProfit}
+                  style={{ width: "110px", borderRadius: "8px" }}
+                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                />
+              </div>
+
+              <Divider style={{ margin: "8px 0", borderColor: "var(--border-soft)", borderStyle: "dashed" }} />
+
+              {/* Hóa đơn kết xuất chi tiết */}
+              <div style={{ fontSize: "13px", color: "var(--text-sub)", display: "flex", flexDirection: "column", gap: "5px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Phút móc tích lũy:</span>
+                  <span style={{ fontWeight: "600", color: "var(--text-main)" }}>
+                    {Math.floor(seconds / 60)} phút ({formatTime(seconds)})
+                  </span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Tiền công ước tính:</span>
+                  <span style={{ fontWeight: "600", color: "var(--text-main)" }}>
+                    {laborCost.toLocaleString()} đ
+                  </span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Chi phí nguyên liệu:</span>
+                  <span style={{ fontWeight: "600", color: "var(--text-main)" }}>
+                    {materialCost.toLocaleString()} đ
+                  </span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Khấu hao & Tiền lãi:</span>
+                  <span style={{ fontWeight: "600", color: "var(--text-main)" }}>
+                    {taxProfit.toLocaleString()} đ
+                  </span>
+                </div>
+              </div>
+
+              <div 
+                style={{ 
+                  marginTop: "10px",
+                  padding: "12px",
+                  background: "var(--bg-card)",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border-soft)",
+                  textAlign: "center"
+                }}
+              >
+                <div style={{ fontSize: "11px", color: "var(--text-sub)", letterSpacing: "1px" }}>GIÁ BÁN GỢI Ý ĐỀ XUẤT</div>
+                <div style={{ fontSize: "22px", fontWeight: "900", color: "var(--pink-dark)" }}>
+                  {recommendedPrice.toLocaleString()} ₫
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

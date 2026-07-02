@@ -72,10 +72,40 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const savedProjects = localStorage.getItem(STORAGE_PROJECTS_KEY);
-      if (savedProjects) setProjects(JSON.parse(savedProjects));
+      let loadedProjects = savedProjects ? JSON.parse(savedProjects) : [];
+
+      // Auto-populate a test project if empty
+      if (loadedProjects.length === 0) {
+        loadedProjects = [
+          {
+            id: "project_test_c001",
+            patternId: "c001",
+            customName: "Dự án mẫu Súp Lơ",
+            category: "Rau Củ",
+            difficulty: "2",
+            imageUrl: "https://i.pinimg.com/736x/80/9a/9b/809a9bd4563e18ae0be88e6ca165ac5f.jpg",
+            status: "progressing",
+            completedSteps: {},
+            rowCount: 2,
+            targetRows: 24,
+            materials: ["Len Milk Cotton 50g", "Bông gòn bi", "Mắt thú 6mm"],
+            tools: ["Kim móc 2.5mm", "Kim khâu len", "Kéo"],
+            notes: "Để ý móc đều tay để súp lơ không bị méo nha!",
+            yarnDetails: [{ brand: "Milk Bò 50g", colorCode: "Xanh lá 26", lotNumber: "Lot A" }],
+            createdDate: Date.now()
+          }
+        ];
+        localStorage.setItem(STORAGE_PROJECTS_KEY, JSON.stringify(loadedProjects));
+      }
+      setProjects(loadedProjects);
       
       const savedActiveMap = localStorage.getItem(STORAGE_ACTIVE_MAP_KEY);
-      if (savedActiveMap) setActiveProjectIdMap(JSON.parse(savedActiveMap));
+      let activeMap = savedActiveMap ? JSON.parse(savedActiveMap) : {};
+      if (!activeMap["c001"]) {
+        activeMap["c001"] = "project_test_c001";
+        localStorage.setItem(STORAGE_ACTIVE_MAP_KEY, JSON.stringify(activeMap));
+      }
+      setActiveProjectIdMap(activeMap);
     } catch (e) {
       console.error("Failed to load projects from localStorage", e);
     }
