@@ -109,7 +109,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
             {project.yarnDetails && project.yarnDetails.length > 0 && (
               <div style={{ marginBottom: "6px", display: "flex", flexWrap: "wrap", gap: "4px" }}>
                 {project.yarnDetails.map((y, i) => (
-                  <Tag key={i} size="small" style={{ fontSize: "10px", margin: 0 }}>
+                  <Tag key={i} style={{ fontSize: "10px", margin: 0 }}>
                     🧵 {y.brand} {y.colorCode ? `(Màu ${y.colorCode})` : ""} {y.lotNumber ? `- Lô ${y.lotNumber}` : ""}
                   </Tag>
                 ))}
