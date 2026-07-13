@@ -60,10 +60,10 @@ export default function ProjectProgressHelper({
           return nextSec;
         });
       }, 1000);
-    } else {
-      clearInterval(interval);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isActive, project.id]);
 
   const handleStart = () => setIsActive(true);
