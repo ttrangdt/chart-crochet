@@ -49,15 +49,15 @@ export default function CreateProjectModal({
     
     const newProj = createProject({
       patternId: pattern.id,
-      customName: values.customName || `Dự án ${pattern.name}`,
+      customName: String(values.customName || `Dự án ${pattern.name}`),
       category: pattern.category,
       difficulty: pattern.difficulty,
       imageUrl: pattern.image_url,
       materials: pattern.materials,
       tools: pattern.tools,
       yarnDetails: validYarns,
-      notes: values.notes || "",
-      targetRows: values.targetRows || 10,
+      notes: String(values.notes || ""),
+      targetRows: Number(values.targetRows) || 10,
     });
 
     notification.success({
