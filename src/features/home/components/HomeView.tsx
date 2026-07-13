@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import mockData from "@/data/mockData.json";
 import { PatternCard } from "@/features/patterns";
+import { Pattern } from "@/features/patterns/types/patterns.types";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -355,7 +356,7 @@ export default function HomeView() {
       <Row gutter={[32, 40]} style={{ marginBottom: "70px" }}>
         {mockData.charts.slice(0, 4).map((pattern) => (
           <Col xs={24} sm={12} md={12} lg={6} key={pattern.id}>
-            <PatternCard pattern={pattern} />
+            <PatternCard pattern={pattern as Pattern} />
           </Col>
         ))}
       </Row>

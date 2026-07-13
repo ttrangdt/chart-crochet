@@ -6,6 +6,7 @@ import mockData from "@/data/mockData.json";
 import { CopyOutlined, ReloadOutlined } from "@ant-design/icons";
 import PatternCard from "./PatternCard";
 import { useSearchParams } from "next/navigation";
+import { Pattern } from "../types/patterns.types";
 
 const { Title, Text } = Typography;
 
@@ -238,7 +239,7 @@ export default function PatternListView() {
             <Row gutter={[24, 32]}>
               {filteredCharts.map((pattern) => (
                 <Col xs={24} sm={12} lg={8} key={pattern.id}>
-                  <PatternCard pattern={pattern} />
+                  <PatternCard pattern={pattern as Pattern} />
                 </Col>
               ))}
             </Row>
