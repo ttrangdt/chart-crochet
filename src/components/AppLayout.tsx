@@ -12,7 +12,7 @@ import {
   Switch,
 } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   HomeOutlined,
   ReadOutlined,
@@ -43,9 +43,20 @@ const sloganMap: Record<string, string> = {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { theme, isDarkMode, toggleTheme } = useTheme();
   const { totalItems } = useBasket();
+
+  const handleSearch = (value: string) => {
+    const q = value.trim();
+    if (q) {
+      router.push(`/patterns?q=${encodeURIComponent(q)}`);
+      setSearchQuery("");
+      setMobileMenuOpen(false);
+    }
+  };
 
   const LogoIcon = theme === "matcha" ? HeartOutlined : HeartFilled;
 
@@ -246,12 +257,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <Input
             placeholder="Tìm theo mẫu..."
-            onPressEnter={() =>
-              alert("Tính năng tìm kiếm sẽ có ở phase Backend!")
-            }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
             suffix={
               <SearchOutlined
                 style={{ color: "var(--pink-dark)", cursor: "pointer" }}
+                onClick={() => handleSearch(searchQuery)}
               />
             }
             style={{
@@ -292,7 +304,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div style={{ padding: "20px", background: "var(--bg-card)" }}>
           <Input
             placeholder="Tìm kiếm..."
-            suffix={<SearchOutlined style={{ color: "var(--pink-dark)" }} />}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
+            suffix={
+              <SearchOutlined
+                style={{ color: "var(--pink-dark)", cursor: "pointer" }}
+                onClick={() => handleSearch(searchQuery)}
+              />
+            }
             style={{ borderRadius: "20px" }}
           />
         </div>
@@ -333,7 +353,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           transition: "0.3s ease",
         }}
       >
-        <Space orientation="vertical" size="large">
+        <Space direction="vertical" size="large">
           <div style={{ fontSize: "24px", color: "var(--pink-dark)" }}>
             <LogoIcon />
           </div>

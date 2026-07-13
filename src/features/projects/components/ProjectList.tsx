@@ -5,7 +5,7 @@ import { Input, Radio, Empty, Button } from "antd";
 import { SearchOutlined, ReadOutlined } from "@ant-design/icons";
 import { useProjects } from "../stores/ProjectsContext";
 import ProjectCard from "./ProjectCard";
-import { projectStyles } from "./projects.styled";
+import { projectStyles } from "./Projects.styles";
 import Link from "next/link";
 
 export default function ProjectList() {

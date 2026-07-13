@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Typography, Progress, Button, Divider, Switch, InputNumber } from "antd";
+import { Typography, Button, Divider, Switch, InputNumber } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import { ActiveProject, useProjects } from "../stores/ProjectsContext";
-import { projectStyles } from "./projects.styled";
+import { projectStyles } from "./Projects.styles";
 import { useAudioBeep } from "../hooks/useAudioBeep";
+import { useDebouncedStorage } from "../hooks/useDebouncedStorage";
 
 const { Title, Text } = Typography;
 
@@ -21,6 +22,7 @@ export default function ProjectProgressHelper({
   const { updateProjectProgress, updateProjectState } = useProjects();
   const [playAudio, setPlayAudio] = useState(true);
   const { playBeep } = useAudioBeep();
+  const { debouncedSet, immediateSet } = useDebouncedStorage(600);
 
   // Stop watch states
   const [seconds, setSeconds] = useState(0);
@@ -35,6 +37,7 @@ export default function ProjectProgressHelper({
   // Load timer status & pricing inputs on project change
   useEffect(() => {
     const savedTime = localStorage.getItem(`crochet-timer-${project.id}`);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSeconds(savedTime ? parseInt(savedTime, 10) : 0);
     setIsActive(false); // Stop when changing projects
 
@@ -48,12 +51,12 @@ export default function ProjectProgressHelper({
 
   // Stopwatch interval hook
   useEffect(() => {
-    let interval: any = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     if (isActive) {
       interval = setInterval(() => {
         setSeconds((prev) => {
           const nextSec = prev + 1;
-          localStorage.setItem(`crochet-timer-${project.id}`, String(nextSec));
+          debouncedSet(`crochet-timer-${project.id}`, String(nextSec));
           return nextSec;
         });
       }, 1000);
@@ -68,7 +71,7 @@ export default function ProjectProgressHelper({
   const handleResetTimer = () => {
     setIsActive(false);
     setSeconds(0);
-    localStorage.setItem(`crochet-timer-${project.id}`, "0");
+    immediateSet(`crochet-timer-${project.id}`, "0");
   };
 
   const updateMaterial = (val: number | null) => {
@@ -197,13 +200,7 @@ export default function ProjectProgressHelper({
           </div>
         </div>
 
-        <style>{`
-          @keyframes yarn-spin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.25); }
-            100% { transform: rotate(360deg) scale(1); }
-          }
-        `}</style>
+
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text italic style={{ fontSize: "13px", color: "var(--text-sub)", flex: 1, marginRight: "10px" }}>
             {overallPercentage === 0 && "Lên kim ngay nào bạn ơi! 🚀"}

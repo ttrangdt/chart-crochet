@@ -4,9 +4,11 @@ import React from "react";
 import { Card, Tag, Rate, Typography } from "antd";
 import Link from "next/link";
 
+import { Pattern } from "@/features/patterns/types/patterns.types";
+
 const { Title, Text } = Typography;
 
-export default function PatternCard({ pattern }: { pattern: any }) {
+export default function PatternCard({ pattern }: { pattern: Pattern }) {
   return (
     <Link href={`/patterns/${pattern.id}`}>
       <Card

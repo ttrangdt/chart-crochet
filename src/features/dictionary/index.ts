@@ -1,2 +1,3 @@
-export { default as CrochetDictionaryModal, STITCH_GLOSSARY } from "./components/CrochetDictionaryModal";
-export type { StitchDefinition } from "./components/CrochetDictionaryModal";
+export { default as CrochetDictionaryModal } from "./components/CrochetDictionaryModal";
+export { STITCH_GLOSSARY } from "./constants/stitchGlossary";
+export type { StitchDefinition } from "./types/dictionary.types";

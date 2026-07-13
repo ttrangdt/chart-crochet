@@ -34,6 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedTheme = localStorage.getItem("theme-mood") as ThemeName;
       if (savedTheme && ["pink", "matcha", "blueberry", "lemon", "dark"].includes(savedTheme)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setThemeState(savedTheme);
         document.documentElement.setAttribute("data-theme", savedTheme);
       } else {

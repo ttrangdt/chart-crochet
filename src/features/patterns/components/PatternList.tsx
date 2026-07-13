@@ -1,18 +1,26 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Typography, Row, Col, Checkbox, Input, Empty, Button } from "antd";
 import mockData from "@/data/mockData.json";
 import { CopyOutlined, ReloadOutlined } from "@ant-design/icons";
 import PatternCard from "./PatternCard";
+import { useSearchParams } from "next/navigation";
 
 const { Title, Text } = Typography;
 
 export default function PatternListView() {
-  const [searchText, setSearchText] = useState("");
+  const searchParams = useSearchParams();
+  const [searchText, setSearchText] = useState(searchParams.get("q") || "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
   const [selectedYarns, setSelectedYarns] = useState<string[]>([]);
+
+  // Sync searchText khi URL thay đổi (navbar search)
+  useEffect(() => {
+    const q = searchParams.get("q") || "";
+    setSearchText(q);
+  }, [searchParams]);
 
   const filteredCharts = useMemo(() => {
     return mockData.charts.filter((chart) => {

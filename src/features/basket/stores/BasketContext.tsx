@@ -37,6 +37,7 @@ export function BasketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setProjects(JSON.parse(saved));
     } catch {
       // ignore

@@ -10,7 +10,6 @@ import {
   Row,
   Col,
   Table,
-  Button,
   Tooltip,
   Alert,
   Tabs,
@@ -24,6 +23,7 @@ import {
   ExperimentOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { YARN_WEIGHT_DATA } from "../constants/yarnWeights";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -41,65 +41,7 @@ type GaugeCalculatorProps = {
   pattern?: PatternProps;
 };
 
-// Chuẩn quốc tế về len sợi & kim móc tương ứng
-const YARN_WEIGHT_DATA = [
-  {
-    key: "0",
-    weight: "0 - Lace (Chỉ mảnh)",
-    ply: "2 ply",
-    hook: "0.6mm - 1.5mm",
-    projects: "Doilies, khăn trải bàn ren, hoa tai mỏng mảnh",
-  },
-  {
-    key: "1",
-    weight: "1 - Super Fine (Mịn)",
-    ply: "3 or 4 ply",
-    hook: "1.5mm - 2.25mm",
-    projects: "Tất (socks), đồ em bé sơ sinh, amigurumi tí hon",
-  },
-  {
-    key: "2",
-    weight: "2 - Fine (Nhẹ)",
-    ply: "5 ply / Sport",
-    hook: "2.25mm - 3.25mm",
-    projects: "Amigurumi nhỏ, khăn quàng cổ nhẹ, áo len mỏng",
-  },
-  {
-    key: "3",
-    weight: "3 - Light (Vừa nhỏ)",
-    ply: "8 ply / DK / Yarn Jeans",
-    hook: "3.25mm - 4.5mm",
-    projects: "Thú bông Amigurumi (chuẩn), mũ ấm, áo len trẻ em",
-  },
-  {
-    key: "4",
-    weight: "4 - Medium (Trung bình)",
-    ply: "10 ply / Worsted / Milk 125g",
-    hook: "4.5mm - 5.5mm",
-    projects: "Chăn ấm, khăn quàng dày, áo khoác, túi xách tiện ích",
-  },
-  {
-    key: "5",
-    weight: "5 - Bulky (Dày)",
-    ply: "12 ply / Chunky / Velvet (Nhung)",
-    hook: "5.5mm - 8.0mm",
-    projects: "Thú ôm khổng lồ, thảm trang trí phòng khách, mũ len dày cộp",
-  },
-  {
-    key: "6",
-    weight: "6 - Super Bulky (Rất dày)",
-    ply: "Nhung đũa / Chenille",
-    hook: "8.0mm - 12.0mm",
-    projects: "Chăn tay dệt thô, gối nằm hơi rộng, gấu bông size bự",
-  },
-  {
-    key: "7",
-    weight: "7 - Jumbo (Siêu bự)",
-    ply: "Len sợi khổng lồ (Chunky tube)",
-    hook: "12.0mm - 20.0mm+",
-    projects: "Giường thú cưng, chăn siêu bự phong cách Bắc Âu",
-  },
-];
+
 
 export default function GaugeCalculator({ pattern }: GaugeCalculatorProps) {
   // Swatch 10x10 đơn (X) của người dùng

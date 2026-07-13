@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, Space, Form, InputNumber, notification, Divider } from "antd";
 import { useProjects, YarnDetail } from "../stores/ProjectsContext";
-import { projectStyles } from "./projects.styled";
+import { projectStyles } from "./Projects.styles";
 import { PlusOutlined as AntPlusOutlined, DeleteOutlined as AntDeleteOutlined, GiftOutlined as AntGiftOutlined } from "@ant-design/icons";
 
 type CreateProjectModalProps = {
@@ -16,14 +16,14 @@ type CreateProjectModalProps = {
     materials: string[];
     tools: string[];
   };
-  visible: boolean;
+  open: boolean;
   onCancel: () => void;
   onSuccess?: (projectId: string) => void;
 };
 
 export default function CreateProjectModal({
   pattern,
-  visible,
+  open,
   onCancel,
   onSuccess,
 }: CreateProjectModalProps) {
@@ -44,7 +44,7 @@ export default function CreateProjectModal({
     setYarns(updated);
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: Record<string, string | number>) => {
     const validYarns = yarns.filter((y) => y.brand.trim() !== "");
     
     const newProj = createProject({
@@ -79,10 +79,10 @@ export default function CreateProjectModal({
           <AntGiftOutlined /> Bắt đầu dự án đan móc mới
         </div>
       }
-      open={visible}
+      open={open}
       onCancel={onCancel}
       footer={null}
-      destroyOnHidden
+      destroyOnClose
       width={480}
       style={{ borderRadius: "20px" }}
     >

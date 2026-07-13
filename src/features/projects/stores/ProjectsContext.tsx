@@ -97,10 +97,11 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
         ];
         localStorage.setItem(STORAGE_PROJECTS_KEY, JSON.stringify(loadedProjects));
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProjects(loadedProjects);
       
       const savedActiveMap = localStorage.getItem(STORAGE_ACTIVE_MAP_KEY);
-      let activeMap = savedActiveMap ? JSON.parse(savedActiveMap) : {};
+      const activeMap: Record<string, string> = savedActiveMap ? JSON.parse(savedActiveMap) : {};
       if (!activeMap["c001"]) {
         activeMap["c001"] = "project_test_c001";
         localStorage.setItem(STORAGE_ACTIVE_MAP_KEY, JSON.stringify(activeMap));
@@ -132,7 +133,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     targetRows: number;
   }) => {
     const newProj: ActiveProject = {
-      id: "project_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9),
+      id: `project_${Date.now()}_${crypto.randomUUID().replace(/-/g, "").substring(0, 9)}`,
       patternId: params.patternId,
       customName: params.customName || "Dự án mới",
       category: params.category,
@@ -207,7 +208,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
           ...p,
           completedSteps,
           rowCount,
-          status: newStatus as any,
+          status: newStatus as ActiveProject["status"],
         };
       });
       localStorage.setItem(STORAGE_PROJECTS_KEY, JSON.stringify(updated));

@@ -1,3 +1,4 @@
 // Migrated to src/features/projects
-export const ProjectsProvider = ({ children }: any) => children;
-export const useProjects = () => ({} as any);
+import React from "react";
+export const ProjectsProvider = ({ children }: { children: React.ReactNode }) => children;
+export const useProjects = () => ({} as Record<string, unknown>);

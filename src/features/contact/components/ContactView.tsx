@@ -19,7 +19,7 @@ export default function ContactView() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: Record<string, string>) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -47,8 +47,8 @@ export default function ContactView() {
             GỬI LỜI CHÀO TỚI TIỆM
           </Title>
           <Paragraph className={styles.paragraph}>
-            "Bạn đang loay hoay vòng tròn ma thuật? Gặp khó khăn khi móc?
-            <br /> Nhắn tin cho mình nhé!"
+            &quot;Bạn đang loay hoay vòng tròn ma thuật? Gặp khó khăn khi móc?
+            <br /> Nhắn tin cho mình nhé!&quot;
           </Paragraph>
         </div>
 

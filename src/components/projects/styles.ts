@@ -1,2 +1,2 @@
 // Migrated to src/features/projects
-export const ProjectListStyled: any = {};
+export const ProjectListStyled: Record<string, unknown> = {};

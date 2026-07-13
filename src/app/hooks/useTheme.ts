@@ -6,6 +6,7 @@ export const useTheme = () => {
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDark(saved === 'dark' || (!saved && prefersDark));
   }, []);
 

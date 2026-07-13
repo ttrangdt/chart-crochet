@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { Card, Tag, Progress, Button, Tooltip, Space, Modal, Form, Input, Select, InputNumber } from "antd";
 import { EditOutlined, DeleteOutlined, CompassOutlined, CalendarOutlined, FileTextOutlined } from "@ant-design/icons";
 import { ActiveProject, useProjects } from "../stores/ProjectsContext";
-import { projectStyles } from "./projects.styled";
+import { projectStyles } from "./Projects.styles";
 import Link from "next/link";
+import mockData from "@/data/mockData.json";
 
 export default function ProjectCard({ project }: { project: ActiveProject }) {
   const { deleteProject, updateProjectState, setActiveProjectForPattern } = useProjects();
@@ -16,9 +17,8 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
   const completedStepsKeys = Object.keys(project.completedSteps);
   const completedStepCount = completedStepsKeys.filter(k => project.completedSteps[k]).length;
   
-  const mockData = require("@/data/mockData.json");
-  const pattern = mockData.charts.find((c: any) => c.id === project.patternId);
-  const stepCount = pattern ? Object.values(pattern.content).reduce((sum: number, steps: any) => sum + steps.length, 0) : 0;
+  const pattern = mockData.charts.find((c) => c.id === project.patternId);
+  const stepCount = pattern ? Object.values(pattern.content).reduce((sum: number, steps) => sum + (steps as string[]).length, 0) : 0;
   const progressPercent = stepCount > 0 ? Math.round((completedStepCount / stepCount) * 100) : 0;
 
   const handleDelete = () => {
@@ -34,7 +34,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
     });
   };
 
-  const handleEditSubmit = (values: any) => {
+  const handleEditSubmit = (values: { customName: string; status: ActiveProject["status"]; notes: string; targetRows: number }) => {
     updateProjectState(project.id, {
       customName: values.customName,
       status: values.status,
@@ -219,7 +219,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
         onOk={() => form.submit()}
         okText="Lưu lại"
         cancelText="Bỏ qua"
-        destroyOnHidden
+        destroyOnClose
         style={{ borderRadius: "20px" }}
       >
         <Form form={form} layout="vertical" onFinish={handleEditSubmit} style={{ marginTop: "15px" }}>
