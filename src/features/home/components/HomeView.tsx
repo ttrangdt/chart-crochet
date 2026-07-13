@@ -5,8 +5,11 @@ import { Typography, Row, Col, Carousel, Button, Card, Avatar, Rate } from "antd
 import {
   BookOutlined,
   CompassOutlined,
+  ShoppingOutlined,
+  MessageOutlined,
   ClockCircleOutlined,
   HeartOutlined,
+  PlusCircleOutlined,
   CheckCircleOutlined
 } from "@ant-design/icons";
 import Link from "next/link";
@@ -172,7 +175,7 @@ export default function HomeView() {
                       lineHeight: "1.6"
                     }}
                   >
-                    &quot;{item.subtitle}&quot;
+                    "{item.subtitle}"
                   </Paragraph>
 
                   <Link href={item.link}>
@@ -418,7 +421,7 @@ export default function HomeView() {
                   </Text>
                 </div>
                 <Paragraph italic style={{ fontSize: "13px", color: "var(--text-sub)", margin: 0, lineHeight: "1.5" }}>
-                  &quot;{s.review}&quot;
+                  "{s.review}"
                 </Paragraph>
               </Card>
             </Col>

@@ -116,8 +116,54 @@ export default function PatternDetail() {
   return (
     <>
       {notifContextHolder}
-      <div className="animate-fade-in-up" style={patternStyles.container}>
-        <PatternDetailHeader pattern={pattern} />
+      <div
+        className="animate-fade-in-up"
+        style={{
+          maxWidth: "1000px",
+          margin: "0 auto",
+          background: "var(--bg-card)",
+          padding: "40px",
+          borderRadius: "32px",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "30px",
+          }}
+        >
+          <Breadcrumb 
+            style={{ fontSize: "15px" }}
+            items={[
+              {
+                title: (
+                  <Link href="/patterns" style={{ color: "var(--pink-light)" }}>
+                    Kho Chart
+                  </Link>
+                ),
+              },
+              {
+                title: (
+                  <span style={{ color: "var(--text-main)", fontWeight: "bold" }}>
+                    {pattern.name}
+                  </span>
+                ),
+              },
+            ]}
+          />
+          <Link href="/patterns">
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              style={{ color: "var(--pink-dark)", fontWeight: "bold" }}
+            >
+              Trở Về Kho
+            </Button>
+          </Link>
+        </div>
 
         <Title level={1} style={patternStyles.pageTitle}>
           {pattern.name}
