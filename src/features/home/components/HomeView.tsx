@@ -356,7 +356,7 @@ export default function HomeView() {
       <Row gutter={[32, 40]} style={{ marginBottom: "70px" }}>
         {mockData.charts.slice(0, 4).map((pattern) => (
           <Col xs={24} sm={12} md={12} lg={6} key={pattern.id}>
-            <PatternCard pattern={pattern as Pattern} />
+            <PatternCard pattern={pattern as unknown as Pattern} />
           </Col>
         ))}
       </Row>

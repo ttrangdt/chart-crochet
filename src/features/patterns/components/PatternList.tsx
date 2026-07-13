@@ -239,7 +239,7 @@ export default function PatternListView() {
             <Row gutter={[24, 32]}>
               {filteredCharts.map((pattern) => (
                 <Col xs={24} sm={12} lg={8} key={pattern.id}>
-                  <PatternCard pattern={pattern as Pattern} />
+                  <PatternCard pattern={pattern as unknown as Pattern} />
                 </Col>
               ))}
             </Row>
