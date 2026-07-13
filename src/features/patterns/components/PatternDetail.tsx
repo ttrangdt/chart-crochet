@@ -385,18 +385,25 @@ export default function PatternDetailView() {
             marginBottom: "30px",
           }}
         >
-          <Breadcrumb style={{ fontSize: "15px" }}>
-            <Breadcrumb.Item>
-              <Link href="/patterns" style={{ color: "var(--pink-light)" }}>
-                Kho Chart
-              </Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item
-              style={{ color: "var(--text-main)", fontWeight: "bold" }}
-            >
-              {pattern.name}
-            </Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb 
+            style={{ fontSize: "15px" }}
+            items={[
+              {
+                title: (
+                  <Link href="/patterns" style={{ color: "var(--pink-light)" }}>
+                    Kho Chart
+                  </Link>
+                ),
+              },
+              {
+                title: (
+                  <span style={{ color: "var(--text-main)", fontWeight: "bold" }}>
+                    {pattern.name}
+                  </span>
+                ),
+              },
+            ]}
+          />
           <Link href="/patterns">
             <Button
               type="text"

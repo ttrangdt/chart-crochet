@@ -497,7 +497,7 @@ export default function CrochetDictionaryModal({
       footer={null}
       width={780}
       style={{ borderRadius: "24px" }}
-      destroyOnHidden
+      destroyOnClose
     >
       <div style={{ marginTop: "15px" }}>
         {/* Thanh Tìm kiếm */}

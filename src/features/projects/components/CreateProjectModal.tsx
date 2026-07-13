@@ -82,7 +82,7 @@ export default function CreateProjectModal({
       open={visible}
       onCancel={onCancel}
       footer={null}
-      destroyOnHidden
+      destroyOnClose
       width={480}
       style={{ borderRadius: "20px" }}
     >

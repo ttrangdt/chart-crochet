@@ -219,7 +219,7 @@ export default function ProjectCard({ project }: { project: ActiveProject }) {
         onOk={() => form.submit()}
         okText="Lưu lại"
         cancelText="Bỏ qua"
-        destroyOnHidden
+        destroyOnClose
         style={{ borderRadius: "20px" }}
       >
         <Form form={form} layout="vertical" onFinish={handleEditSubmit} style={{ marginTop: "15px" }}>
