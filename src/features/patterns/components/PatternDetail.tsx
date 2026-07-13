@@ -33,7 +33,7 @@ export default function PatternDetail() {
 
   // Find current pattern
   const patternId = typeof params.id === "string" ? params.id : Array.isArray(params.id) ? params.id[0] : undefined;
-  const pattern = patternId ? (mockData.charts.find((p) => p.id === patternId) as Pattern | undefined) : undefined;
+  const pattern = patternId ? (mockData.charts.find((p) => p.id === patternId) as unknown as Pattern | undefined) : undefined;
 
   // Modals & Popups states
   const [createModalOpen, setCreateModalOpen] = useState(false);

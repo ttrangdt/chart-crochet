@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Pattern Service — abstraction layer for pattern data access.
  * Currently backed by static mockData.json.
  * Swap implementation here when a real API is available — no other file changes needed.
@@ -7,7 +7,7 @@
 import mockData from "@/data/mockData.json";
 import type { Pattern } from "../types/patterns.types";
 
-const patterns = mockData.charts as Pattern[];
+const patterns = mockData.charts as unknown as Pattern[];
 
 export const patternService = {
   /** Get all patterns */
